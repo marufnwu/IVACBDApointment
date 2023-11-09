@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Constants {
+
+    public static final String KEY_INTENT_DATES_ACTIVITY =  "intentDatesActivity";
     public static Map<String, Integer> visaTypeMap = new HashMap<String, Integer>() {{
         put("Tourist", 3);
         put("Medical/Attendee", 13);
@@ -37,6 +39,7 @@ public class Constants {
         put("Thakurgoan", 18);
     }};
 
+
     /*public static ArrayList visaType = new ArrayList() {
         {
             add("Tourist");
@@ -51,9 +54,11 @@ public class Constants {
             add("Other");
         }
     };
+     */
 
     public static ArrayList ivacList = new ArrayList() {
         {
+            add("Select A IVAC");
             add("Barisal");
             add("Bogura");
             add("Brahmanbaria");
@@ -71,5 +76,5 @@ public class Constants {
             add("Sylhet");
             add("Thakurgoan");
         }
-    };*/
+    };
 }

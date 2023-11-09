@@ -1,5 +1,6 @@
 package com.logicline.ivacbdapointment.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.logicline.ivacbdapointment.R;
 import com.logicline.ivacbdapointment.adapters.VisaTypesAdapter;
 import com.logicline.ivacbdapointment.databinding.FragmentHomeBinding;
 import com.logicline.ivacbdapointment.models.VisaType;
+import com.logicline.ivacbdapointment.ui.DatesActivity;
 import com.logicline.ivacbdapointment.utils.Utils;
 
 import java.util.ArrayList;
@@ -67,7 +69,8 @@ public class HomeFragment extends Fragment {
         adapter.setItemClickListener(new VisaTypesAdapter.ItemClickListener() {
             @Override
             public void onItemClick(VisaType visaType) {
-                Utils.showToast(requireContext(), "Clicked");
+                Intent intent = DatesActivity.getDAtesActivityIntent(requireContext(), visaType);
+                startActivity(intent);
             }
         });
 
