@@ -15,9 +15,8 @@
             android:id="@+id/cv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_5sdp"
+            android:layout_margin="@dimen/_3sdp"
             app:cardCornerRadius="@dimen/_8sdp"
-            app:cardBackgroundColor="#FD6C6C"
             app:cardElevation="@dimen/_3sdp">
 
             <androidx.constraintlayout.widget.ConstraintLayout

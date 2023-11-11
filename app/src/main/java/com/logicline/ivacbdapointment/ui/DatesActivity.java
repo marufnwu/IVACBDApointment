@@ -1,5 +1,6 @@
 package com.logicline.ivacbdapointment.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -9,12 +10,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.google.gson.Gson;
 import com.logicline.ivacbdapointment.R;
+import com.logicline.ivacbdapointment.adapters.AvailableSlotAdapter;
 import com.logicline.ivacbdapointment.adapters.VisaDatesAdapters;
 import com.logicline.ivacbdapointment.adapters.VisaTypesAdapter;
 import com.logicline.ivacbdapointment.data.ApiInterface;
@@ -35,7 +38,6 @@ import retrofit2.Response;
 
 public class DatesActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "DatesActivity";
-
     private ActivityDatesBinding binding;
     private ViewModel viewModel;
     private VisaType visaType;
@@ -58,30 +60,13 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
         binding = ActivityDatesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
         ApiInterface myApi = MyApi.getInstance(this);
         ViewModel.MyViewModelFactory factory = new ViewModel.MyViewModelFactory(getApplication(), myApi);
-
-        RequestParamAvailableDates request = new RequestParamAvailableDates("generateSlotTime",
-                23, 3, new ArrayList<>());
-
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-                myApi.getAvailableDates(request).enqueue(new Callback<AvailableDates>() {
-                    @Override
-                    public void onResponse(Call<AvailableDates> call, Response<AvailableDates> response) {
-                        if (response.isSuccessful()){
-                            Log.d(TAG, "onResponse: size " + response.body().slot_dates.size());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<AvailableDates> call, Throwable t) {
-
-                    }
-                });
-            }
-        }).start();*/
 
 
         viewModel = new ViewModelProvider(this, factory).get(ViewModel.class);
@@ -97,6 +82,15 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
 
         initViews();
         initObservers();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initViews(){
@@ -127,7 +121,10 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
         datesAdapters.setItemClickListener(new VisaDatesAdapters.ItemClickListener() {
             @Override
             public void onItemClick(String date) {
-                Utils.showToast(getApplicationContext(), "Clicked");
+                Intent intent =
+                        AvailableSlotsActivity.getAvailableSlotActivityIntent(
+                                DatesActivity.this, date, visaCode, ivacCode);
+                startActivity(intent);
             }
         });
 
@@ -146,7 +143,7 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
                 if (strings != null){
                     datesAdapters.setData(strings);
                 }else {
-                    Utils.showToast(getApplicationContext(), "No Data Found");
+                    Utils.showToast(getApplicationContext(), "No Dates Available");
                 }
             }
         });

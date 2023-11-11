@@ -7,6 +7,10 @@ import java.util.Map;
 public class Constants {
 
     public static final String KEY_INTENT_DATES_ACTIVITY =  "intentDatesActivity";
+    public static final String KEY_INTENT_AVAILABLE_SLOT_DATE = "availableSlotDate";
+    public static final String KEY_INTENT_AVAILABLE_SLOT_VISA_TYPE = "availableSlotVisaType";
+    public static final String KEY_INTENT_AVAILABLE_SLOT_IVAC_CODE = "availableSlotIvacCode";
+
     public static Map<String, Integer> visaTypeMap = new HashMap<String, Integer>() {{
         put("Tourist", 3);
         put("Medical/Attendee", 13);
