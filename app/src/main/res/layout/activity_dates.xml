@@ -14,14 +14,15 @@
         android:layout_marginHorizontal="@dimen/_5sdp"
         android:layout_marginTop="@dimen/_5sdp"
         android:background="@drawable/bg_spinner"
-        android:padding="@dimen/_5sdp"
+        android:paddingHorizontal="@dimen/_5sdp"
+        android:paddingVertical="@dimen/_7sdp"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_find_dates"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_4sdp"
         android:text="Find Dates"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,9 +33,10 @@
         android:id="@+id/rv_dates"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/_5sdp"
         android:layout_marginTop="@dimen/_5sdp"
-        app:layout_constraintTop_toBottomOf="@+id/btn_find_dates" />
+        android:layout_marginHorizontal="@dimen/_3sdp"
+        app:layout_constraintTop_toBottomOf="@+id/btn_find_dates"
+        tools:layout_editor_absoluteX="0dp" />
 
     <ProgressBar
         android:id="@+id/pb_loading"
@@ -46,4 +48,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/rv_dates" />
 
+    <LinearLayout
+        android:id="@+id/ll_no_item_found"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_find_dates">
+
+        <ImageView
+            android:layout_width="@dimen/_250sdp"
+            android:layout_height="@dimen/_200sdp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_no_item_found" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No Item Found"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14sdp"
+            android:textStyle="bold" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

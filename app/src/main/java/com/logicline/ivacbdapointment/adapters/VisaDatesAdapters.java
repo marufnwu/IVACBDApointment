@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.logicline.ivacbdapointment.R;
 import com.logicline.ivacbdapointment.databinding.ItemDateBinding;
 import com.logicline.ivacbdapointment.ui.ViewModel;
+import com.logicline.ivacbdapointment.utils.TimeAndDateUtils;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +67,7 @@ public class VisaDatesAdapters extends RecyclerView.Adapter<VisaDatesAdapters.My
         }
 
         public void bindData(String date){
-            binding.tvDate.setText(date);
+            binding.tvDate.setText(TimeAndDateUtils.getDateWithMonthName(date));
 
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override

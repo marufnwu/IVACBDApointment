@@ -12,9 +12,9 @@
         android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="@dimen/_90sdp"
+        android:layout_width="@dimen/_85sdp"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_7sdp"
+        android:layout_margin="@dimen/_3sdp"
         app:cardCornerRadius="@dimen/_7sdp"
         app:cardElevation="@dimen/_5sdp"
         app:layout_constraintEnd_toEndOf="parent"

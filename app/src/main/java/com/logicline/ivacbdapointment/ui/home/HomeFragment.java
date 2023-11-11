@@ -19,6 +19,7 @@ import com.logicline.ivacbdapointment.adapters.VisaTypesAdapter;
 import com.logicline.ivacbdapointment.databinding.FragmentHomeBinding;
 import com.logicline.ivacbdapointment.models.VisaType;
 import com.logicline.ivacbdapointment.ui.DatesActivity;
+import com.logicline.ivacbdapointment.utils.Constants;
 import com.logicline.ivacbdapointment.utils.Utils;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private VisaTypesAdapter adapter;
+    private VisaTypesAdapter ivacAdapter;
     //private HomeViewModel homeViewModel;
     private final ArrayList visaTypes = new ArrayList() {
         {
@@ -41,6 +43,28 @@ public class HomeFragment extends Fragment {
             add(new VisaType("Employment", R.drawable.ic_employee));
             add(new VisaType("Transit", R.drawable.ic_transit));
             add(new VisaType("Other", R.drawable.ic_others));
+
+        }
+    };
+
+    private final ArrayList ivacCenters = new ArrayList() {
+        {
+            add(new VisaType("Barisal", R.drawable.barishal));
+            add(new VisaType("Bogura", R.drawable.bogura));
+            add(new VisaType("Brahmanbaria", R.drawable.brahmanbaria));
+            add(new VisaType("Chittagong", R.drawable.chittagong));
+            add(new VisaType("Comilla", R.drawable.comilla));
+            add(new VisaType("Dhaka", R.drawable.dhaka));
+            add(new VisaType("Jessore", R.drawable.jessore));
+            add(new VisaType("Khulna", R.drawable.khulna));
+            add(new VisaType("Kushtia", R.drawable.kustia));
+            add(new VisaType("Mymensingh", R.drawable.mymenshing));
+            add(new VisaType("Noakhali", R.drawable.noakhali));
+            add(new VisaType("Rajshahi", R.drawable.rajshahi));
+            add(new VisaType("Rangpur", R.drawable.rangpur));
+            add(new VisaType("Satkhira", R.drawable.satkhira));
+            add(new VisaType("Sylhet", R.drawable.sylhet));
+            add(new VisaType("Thakurgoan", R.drawable.thakurgoan));
 
         }
     };
@@ -64,12 +88,13 @@ public class HomeFragment extends Fragment {
             requireActivity().getActionBar().setTitle("IVAC");
         }
 
-        adapter = new VisaTypesAdapter(requireContext());
+        adapter = new VisaTypesAdapter(requireContext(), Constants.DATE_ACTIVITY_INTENT_TYPE_VISA);
         adapter.setData(visaTypes);
         adapter.setItemClickListener(new VisaTypesAdapter.ItemClickListener() {
             @Override
             public void onItemClick(VisaType visaType) {
-                Intent intent = DatesActivity.getDAtesActivityIntent(requireContext(), visaType);
+                Intent intent = DatesActivity.getDAtesActivityIntent(requireContext(),
+                        visaType, Constants.DATE_ACTIVITY_INTENT_TYPE_VISA);
                 startActivity(intent);
             }
         });
@@ -79,7 +104,21 @@ public class HomeFragment extends Fragment {
         binding.rvVisaTypes.setAdapter(adapter);
 
 
-        //initObservers();
+        ivacAdapter = new VisaTypesAdapter(requireContext(), Constants.DATE_ACTIVITY_INTENT_TYPE_IVAC);
+        ivacAdapter.setData(ivacCenters);
+        ivacAdapter.setItemClickListener(new VisaTypesAdapter.ItemClickListener() {
+            @Override
+            public void onItemClick(VisaType visaType) {
+                Intent intent = DatesActivity.getDAtesActivityIntent(requireContext(),
+                        visaType, Constants.DATE_ACTIVITY_INTENT_TYPE_IVAC);
+                startActivity(intent);
+            }
+        });
+
+        GridLayoutManager layoutManagerIvacCenters = new GridLayoutManager(requireContext(), 3);
+        binding.rvIvacCenters.setLayoutManager(layoutManagerIvacCenters);
+        binding.rvIvacCenters.setAdapter(ivacAdapter);
+
 
     }
 
@@ -89,14 +128,4 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    /*private void initObservers(){
-        homeViewModel.getVisaTypeMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<VisaType>>() {
-            @Override
-            public void onChanged(List<VisaType> visaTypes) {
-                if (adapter != null){
-                    adapter.setData(visaTypes);
-                }
-            }
-        });
-    }*/
 }

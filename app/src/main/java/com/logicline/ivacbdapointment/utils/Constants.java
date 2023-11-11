@@ -10,6 +10,9 @@ public class Constants {
     public static final String KEY_INTENT_AVAILABLE_SLOT_DATE = "availableSlotDate";
     public static final String KEY_INTENT_AVAILABLE_SLOT_VISA_TYPE = "availableSlotVisaType";
     public static final String KEY_INTENT_AVAILABLE_SLOT_IVAC_CODE = "availableSlotIvacCode";
+    public static final int DATE_ACTIVITY_INTENT_TYPE_VISA = 1;
+    public static final int DATE_ACTIVITY_INTENT_TYPE_IVAC = 2;
+    public static final String DATE_ACTIVITY_INTENT_TYPE = "dateActivityIntentType";
 
     public static Map<String, Integer> visaTypeMap = new HashMap<String, Integer>() {{
         put("Tourist", 3);
@@ -79,6 +82,22 @@ public class Constants {
             add("Satkhira");
             add("Sylhet");
             add("Thakurgoan");
+        }
+    };
+
+    public static ArrayList visaTypes = new ArrayList() {
+        {
+            add("Select Visa Type");
+            add("Tourist");
+            add("Medical/Attendee");
+            add("Business");
+            add("Entry");
+            add("Student");
+            add("Conference");
+            add("Employment");
+            add("Transit");
+            add("Research/Training");
+            add("Other");
         }
     };
 }

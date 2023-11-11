@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.logicline.ivacbdapointment.R;
 import com.logicline.ivacbdapointment.databinding.ItemVisaTypesBinding;
 import com.logicline.ivacbdapointment.models.VisaType;
+import com.logicline.ivacbdapointment.utils.Constants;
 
 import java.util.List;
 
@@ -19,16 +20,24 @@ public class VisaTypesAdapter extends RecyclerView.Adapter<VisaTypesAdapter.MyVi
     private final Context context;
     private ItemClickListener mItemClickListener;
     private List<VisaType> data;
+    private int type;
 
-    public VisaTypesAdapter(Context context) {
+    public VisaTypesAdapter(Context context, int type) {
         this.context = context;
+        this.type = type;
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_visa_types, parent, false);
-        return new MyViewHolder(view);
+        if (type == Constants.DATE_ACTIVITY_INTENT_TYPE_VISA){
+            View view = LayoutInflater.from(context).inflate(R.layout.item_visa_types, parent, false);
+            return new MyViewHolder(view);
+        }else {
+            View view = LayoutInflater.from(context).inflate(R.layout.item_ivacs, parent, false);
+            return new MyViewHolder(view);
+        }
+
     }
 
     @Override

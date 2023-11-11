@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -82,6 +83,7 @@ public class AvailableSlotsActivity extends AppCompatActivity {
     }
 
     private void initViews(){
+        binding.pbLoading.setVisibility(View.VISIBLE);
         adapter = new AvailableSlotAdapter(this);
 
         binding.rvAvailableTimeSlot.setLayoutManager(new LinearLayoutManager(this));
@@ -92,10 +94,12 @@ public class AvailableSlotsActivity extends AppCompatActivity {
         viewModel.getAvailableSlotTimes().observe(this, new Observer<List<SlotTime>>() {
             @Override
             public void onChanged(List<SlotTime> slotTimes) {
+                binding.pbLoading.setVisibility(View.GONE);
                 if (slotTimes != null && slotTimes.size() != 0){
+                    binding.llNoItemFound.setVisibility(View.GONE);
                     adapter.setData(slotTimes);
                 }else {
-                    Utils.showToast(getApplicationContext(), "No Slot Available");
+                    binding.llNoItemFound.setVisibility(View.VISIBLE);
                 }
             }
         });

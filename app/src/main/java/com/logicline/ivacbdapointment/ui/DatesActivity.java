@@ -30,6 +30,7 @@ import com.logicline.ivacbdapointment.utils.Constants;
 import com.logicline.ivacbdapointment.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -43,12 +44,14 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
     private VisaType visaType;
     private int ivacCode = -1;
     private int visaCode = -1;
+    private int intentType = -1;
     private VisaDatesAdapters datesAdapters;
 
-    public static Intent getDAtesActivityIntent(Context context, VisaType visaType){
+    public static Intent getDAtesActivityIntent(Context context, VisaType visaType, int intentType){
         Intent intent = new Intent(context, DatesActivity.class);
         Gson gson = new Gson();
         intent.putExtra(Constants.KEY_INTENT_DATES_ACTIVITY, gson.toJson(visaType));
+        intent.putExtra(Constants.DATE_ACTIVITY_INTENT_TYPE, intentType);
 
         return intent;
     }
@@ -76,7 +79,12 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
 
             String intentString = getIntent().getStringExtra(Constants.KEY_INTENT_DATES_ACTIVITY);
             visaType = gson.fromJson(intentString, VisaType.class);
-            visaCode = Constants.visaTypeMap.getOrDefault(visaType.getTitle(), -1);
+            intentType = getIntent().getIntExtra(Constants.DATE_ACTIVITY_INTENT_TYPE, -1);
+            if (intentType == Constants.DATE_ACTIVITY_INTENT_TYPE_VISA){
+                visaCode = Constants.visaTypeMap.getOrDefault(visaType.getTitle(), -1);
+            }else if (intentType == Constants.DATE_ACTIVITY_INTENT_TYPE_IVAC){
+                ivacCode = Constants.ivacMap.getOrDefault(visaType.getTitle(), -1);
+            }
         }else
             return;
 
@@ -98,16 +106,31 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
             getSupportActionBar().setTitle(visaType.getTitle());
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item,Constants.ivacList);
-        binding.spnrSelectIvac.setAdapter(adapter);
+        if (intentType == Constants.DATE_ACTIVITY_INTENT_TYPE_VISA){
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_spinner_item,Constants.ivacList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.spnrSelectIvac.setAdapter(adapter);
+        }else if (intentType == Constants.DATE_ACTIVITY_INTENT_TYPE_IVAC){
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_spinner_item,Constants.visaTypes);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.spnrSelectIvac.setAdapter(adapter);
+        }
+
 
         binding.spnrSelectIvac.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0){
-                    String ivac = Constants.ivacList.get(position).toString();
-                    ivacCode = Constants.ivacMap.getOrDefault(ivac, -1);
+
+                    if (intentType == Constants.DATE_ACTIVITY_INTENT_TYPE_VISA){
+                        String ivac = Constants.ivacList.get(position).toString();
+                        ivacCode = Constants.ivacMap.getOrDefault(ivac, -1);
+                    }else if (intentType == Constants.DATE_ACTIVITY_INTENT_TYPE_IVAC){
+                        String visaType = Constants.visaTypes.get(position).toString();
+                        visaCode = Constants.visaTypeMap.getOrDefault(visaType, -1);
+                    }
                 }
             }
 
@@ -140,10 +163,11 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onChanged(List<String> strings) {
                 binding.pbLoading.setVisibility(View.GONE);
-                if (strings != null){
+                if (strings != null && strings.size() != 0){
                     datesAdapters.setData(strings);
+                    binding.llNoItemFound.setVisibility(View.GONE);
                 }else {
-                    Utils.showToast(getApplicationContext(), "No Dates Available");
+                    binding.llNoItemFound.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -153,6 +177,10 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         if (v == binding.btnFindDates){
+            Log.d(TAG, "onClick: ivac code " + ivacCode);
+            Log.d(TAG, "onClick: visa type " + visaCode);
+
+
             if (ivacCode != -1 && visaCode != -1 && viewModel != null){
                 viewModel.fetchAvailableDates(visaCode, ivacCode);
                 binding.pbLoading.setVisibility(View.VISIBLE);
