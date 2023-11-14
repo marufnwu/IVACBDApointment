@@ -13,6 +13,7 @@ public class Constants {
     public static final int DATE_ACTIVITY_INTENT_TYPE_VISA = 1;
     public static final int DATE_ACTIVITY_INTENT_TYPE_IVAC = 2;
     public static final String DATE_ACTIVITY_INTENT_TYPE = "dateActivityIntentType";
+    public static final String KEY_INTENT_WEB_VIEW_ACTIVITY = "webviewActivity";
 
     public static Map<String, Integer> visaTypeMap = new HashMap<String, Integer>() {{
         put("Tourist", 3);

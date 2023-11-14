@@ -15,6 +15,9 @@
         android:theme="@style/Theme.IVACBDApointment"
         tools:targetApi="31">
         <activity
+            android:name=".ui.WebViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.AvailableSlotsActivity"
             android:exported="false" />
         <activity
