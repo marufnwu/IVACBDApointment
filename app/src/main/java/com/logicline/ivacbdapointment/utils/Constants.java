@@ -15,6 +15,8 @@ public class Constants {
     public static final String DATE_ACTIVITY_INTENT_TYPE = "dateActivityIntentType";
     public static final String KEY_INTENT_WEB_VIEW_ACTIVITY = "webviewActivity";
 
+    public static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
+
     public static Map<String, Integer> visaTypeMap = new HashMap<String, Integer>() {{
         put("Tourist", 3);
         put("Medical/Attendee", 13);

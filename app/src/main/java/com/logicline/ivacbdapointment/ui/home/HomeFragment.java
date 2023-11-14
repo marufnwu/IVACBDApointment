@@ -2,6 +2,7 @@ package com.logicline.ivacbdapointment.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,12 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.logicline.ivacbdapointment.R;
 import com.logicline.ivacbdapointment.adapters.VisaTypesAdapter;
 import com.logicline.ivacbdapointment.databinding.FragmentHomeBinding;
@@ -26,10 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
-
-    private FragmentHomeBinding binding;
-    private VisaTypesAdapter adapter;
-    private VisaTypesAdapter ivacAdapter;
+    private static final String TAG = "HomeFragment";
     //private HomeViewModel homeViewModel;
     private final ArrayList visaTypes = new ArrayList() {
         {
@@ -46,7 +50,6 @@ public class HomeFragment extends Fragment {
 
         }
     };
-
     private final ArrayList ivacCenters = new ArrayList() {
         {
             add(new VisaType("Barisal", R.drawable.barishal));
@@ -68,6 +71,11 @@ public class HomeFragment extends Fragment {
 
         }
     };
+    private FragmentHomeBinding binding;
+    private VisaTypesAdapter adapter;
+    private VisaTypesAdapter ivacAdapter;
+    private InterstitialAd mInterstitialAd;
+    private VisaType clickedVisaType;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -84,18 +92,29 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (requireActivity().getActionBar() != null){
+        if (requireActivity().getActionBar() != null) {
             requireActivity().getActionBar().setTitle("IVAC");
         }
+
+        initFullScreenAds();
 
         adapter = new VisaTypesAdapter(requireContext(), Constants.DATE_ACTIVITY_INTENT_TYPE_VISA);
         adapter.setData(visaTypes);
         adapter.setItemClickListener(new VisaTypesAdapter.ItemClickListener() {
             @Override
             public void onItemClick(VisaType visaType) {
-                Intent intent = DatesActivity.getDAtesActivityIntent(requireContext(),
-                        visaType, Constants.DATE_ACTIVITY_INTENT_TYPE_VISA);
-                startActivity(intent);
+                clickedVisaType = visaType;
+
+                if (mInterstitialAd != null){
+                    mInterstitialAd.show(requireActivity());
+                    Log.d(TAG, "onItemClick: initAds ad not null");
+                }else {
+                    Log.d(TAG, "onItemClick: initAds ad is null");
+                    initFullScreenAds();
+                    toDatesActivity();
+                }
+
+
             }
         });
 
@@ -109,9 +128,17 @@ public class HomeFragment extends Fragment {
         ivacAdapter.setItemClickListener(new VisaTypesAdapter.ItemClickListener() {
             @Override
             public void onItemClick(VisaType visaType) {
-                Intent intent = DatesActivity.getDAtesActivityIntent(requireContext(),
-                        visaType, Constants.DATE_ACTIVITY_INTENT_TYPE_IVAC);
-                startActivity(intent);
+
+                clickedVisaType = visaType;
+
+                if (mInterstitialAd != null){
+                    Log.d(TAG, "onItemClick: initAds ad not null");
+                    mInterstitialAd.show(requireActivity());
+                }else {
+                    Log.d(TAG, "onItemClick: initAds ad null");
+                    initFullScreenAds();
+                    toDatesActivity();
+                }
             }
         });
 
@@ -126,6 +153,65 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void initFullScreenAds() {
+        Log.d(TAG, "initFullScreenAds: initAds");
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(requireContext(), Constants.AD_UNIT_ID, adRequest,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        // The mInterstitialAd reference will be null until
+                        // an ad is loaded.
+                        mInterstitialAd = interstitialAd;
+                        setupFullScreenCallback();
+                        Log.d(TAG, "onAdLoaded: initAds");
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error
+                        Log.d(TAG, loadAdError.toString());
+                        mInterstitialAd = null;
+                        Log.d(TAG, "onAdFailedToLoad: initAds " + loadAdError);
+                    }
+                });
+    }
+
+    private void setupFullScreenCallback(){
+        if (mInterstitialAd != null){
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    // Called when ad is dismissed.
+                    // Set the ad reference to null so you don't show the ad a second time.
+                    Log.d(TAG, "onAdDismissedFullScreenContent: initAds");
+                    mInterstitialAd = null;
+                    initFullScreenAds();
+                    toDatesActivity();
+                }
+
+                @Override
+                public void onAdFailedToShowFullScreenContent(AdError adError) {
+                    // Called when ad fails to show.
+                    Log.d(TAG, "onAdFailedToShowFullScreenContent: initAds");
+                    mInterstitialAd = null;
+                    initFullScreenAds();
+                    toDatesActivity();
+                }
+            });
+        }
+    }
+
+    private void toDatesActivity(){
+        if (clickedVisaType != null){
+            Intent intent = DatesActivity.getDAtesActivityIntent(requireContext(),
+                    clickedVisaType, Constants.DATE_ACTIVITY_INTENT_TYPE_VISA);
+            startActivity(intent);
+        }
     }
 
 }

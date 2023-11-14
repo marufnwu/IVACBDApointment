@@ -15,6 +15,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.gson.Gson;
 import com.logicline.ivacbdapointment.R;
 import com.logicline.ivacbdapointment.adapters.AvailableSlotAdapter;
@@ -46,6 +52,7 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
     private int visaCode = -1;
     private int intentType = -1;
     private VisaDatesAdapters datesAdapters;
+    private InterstitialAd mInterstitialAd;
 
     public static Intent getDAtesActivityIntent(Context context, VisaType visaType, int intentType){
         Intent intent = new Intent(context, DatesActivity.class);
@@ -67,6 +74,7 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+        initFullScreenAds();
 
         ApiInterface myApi = MyApi.getInstance(this);
         ViewModel.MyViewModelFactory factory = new ViewModel.MyViewModelFactory(getApplication(), myApi);
@@ -173,6 +181,59 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
+    private void initFullScreenAds() {
+        Log.d(TAG, "initFullScreenAds: initAds");
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(this, Constants.AD_UNIT_ID, adRequest,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        // The mInterstitialAd reference will be null until
+                        // an ad is loaded.
+                        mInterstitialAd = interstitialAd;
+                        setupFullScreenCallback();
+                        Log.d(TAG, "onAdLoaded: initAds");
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error
+                        Log.d(TAG, loadAdError.toString());
+                        mInterstitialAd = null;
+                        Log.d(TAG, "onAdFailedToLoad: initAds " + loadAdError);
+                    }
+                });
+    }
+
+    private void setupFullScreenCallback(){
+        if (mInterstitialAd != null){
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    // Called when ad is dismissed.
+                    // Set the ad reference to null so you don't show the ad a second time.
+                    Log.d(TAG, "onAdDismissedFullScreenContent: initAds");
+                    mInterstitialAd = null;
+
+                    viewModel.fetchAvailableDates(visaCode, ivacCode);
+                    binding.pbLoading.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAdFailedToShowFullScreenContent(AdError adError) {
+                    // Called when ad fails to show.
+                    Log.d(TAG, "onAdFailedToShowFullScreenContent: initAds");
+                    mInterstitialAd = null;
+
+                    viewModel.fetchAvailableDates(visaCode, ivacCode);
+                    binding.pbLoading.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -182,8 +243,13 @@ public class DatesActivity extends AppCompatActivity implements View.OnClickList
 
 
             if (ivacCode != -1 && visaCode != -1 && viewModel != null){
-                viewModel.fetchAvailableDates(visaCode, ivacCode);
-                binding.pbLoading.setVisibility(View.VISIBLE);
+                if (mInterstitialAd != null){
+                    mInterstitialAd.show(this);
+                }else {
+                    viewModel.fetchAvailableDates(visaCode, ivacCode);
+                    binding.pbLoading.setVisibility(View.VISIBLE);
+                    //initFullScreenAds();
+                }
             }
         }
     }
